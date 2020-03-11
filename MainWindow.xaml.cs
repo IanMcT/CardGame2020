@@ -105,15 +105,38 @@ namespace CardGame2020
                     dealerhandOutput += dealerhand[i].ToString() + ", ";
                 }
             }
-            displayCard();
+            displayCard(13);
             MessageBox.Show(playerhandOutput + Environment.NewLine
                 + dealerhandOutput);
         }
-        public void displayCard()
+        public void displayCard(int c)
         {
            
             BitmapImage bitmapImage = new BitmapImage(new Uri("cards.png",UriKind.Relative));
-            MessageBox.Show(bitmapImage.Width.ToString());
+            ImageBrush sprite = new ImageBrush(bitmapImage);
+            TranslateTransform translateTransform;
+            translateTransform = new TranslateTransform(0, 0);
+
+            sprite.Stretch = Stretch.None;
+            sprite.AlignmentX = AlignmentX.Left;
+            sprite.AlignmentY = AlignmentY.Top;
+            //(c%13)*(bitmapImage.Width/13)
+            sprite.Viewport = new Rect(0, 0, bitmapImage.Width/13, bitmapImage.Height/4);
+            translateTransform = 
+                new TranslateTransform(-(c % 13) * (bitmapImage.Width / 13), 
+                -(c/13)*(bitmapImage.Height/4));
+            sprite.Transform = translateTransform;
+
+            Rectangle card1 = new Rectangle();
+            card1.Fill = sprite;
+            card1.Width = bitmapImage.Width/13;
+            card1.Height = bitmapImage.Height / 4;
+
+            canvas.Children.Add(card1);
+            Canvas.SetTop(card1, 50);
+            Canvas.SetLeft(card1, 100);
+            // MessageBox.Show(bitmapImage.Width.ToString());
+          //  MessageBox.Show(bitmapImage.Height.ToString());
         }
     }
 }

@@ -26,6 +26,12 @@ namespace CardGame2020
         int LocationInDeck;
         int[] playerHand;
         int[] dealerhand;
+        TranslateTransform[] playerTranslateTransform;
+        TranslateTransform[] dealerTranslateTransform;
+        Rectangle[] rectanglePlayer;
+        Rectangle[] rectangleDealer;
+        ImageBrush[] playerSprite;
+        ImageBrush[] dealerSprite;
 
         public MainWindow()
         {
@@ -39,9 +45,15 @@ namespace CardGame2020
             }
 
             //set default values
+            playerSprite = new ImageBrush[4];
+            dealerSprite = new ImageBrush[4];
             LocationInDeck = 0;
+            rectanglePlayer = new Rectangle[4];
+            rectangleDealer = new Rectangle[4];
             playerHand = new int[] {-1,-1,-1,-1 };
             dealerhand = new int[] { -1, -1, -1, -1 };
+            playerTranslateTransform = new TranslateTransform[4];
+            dealerTranslateTransform = new TranslateTransform[4];
 
 
             string output = "";
@@ -105,38 +117,46 @@ namespace CardGame2020
                     dealerhandOutput += dealerhand[i].ToString() + ", ";
                 }
             }
-            displayCard(13);
+            displayCards();
             MessageBox.Show(playerhandOutput + Environment.NewLine
                 + dealerhandOutput);
         }
-        public void displayCard(int c)
+        public void displayCards()
         {
            
             BitmapImage bitmapImage = new BitmapImage(new Uri("cards.png",UriKind.Relative));
-            ImageBrush sprite = new ImageBrush(bitmapImage);
-            TranslateTransform translateTransform;
-            translateTransform = new TranslateTransform(0, 0);
+            
 
-            sprite.Stretch = Stretch.None;
-            sprite.AlignmentX = AlignmentX.Left;
-            sprite.AlignmentY = AlignmentY.Top;
-            //(c%13)*(bitmapImage.Width/13)
-            sprite.Viewport = new Rect(0, 0, bitmapImage.Width/13, bitmapImage.Height/4);
-            translateTransform = 
-                new TranslateTransform(-(c % 13) * (bitmapImage.Width / 13), 
-                -(c/13)*(bitmapImage.Height/4));
-            sprite.Transform = translateTransform;
+            for (int i = 0; i < playerHand.Length; i++)
+            {
+                playerSprite[i] = new ImageBrush(bitmapImage);
+                dealerSprite[i] = new ImageBrush(bitmapImage);
+                playerTranslateTransform[i] = new TranslateTransform(0, 0);
+                dealerTranslateTransform[i] = new TranslateTransform(0, 0);
 
-            Rectangle card1 = new Rectangle();
-            card1.Fill = sprite;
-            card1.Width = bitmapImage.Width/13;
-            card1.Height = bitmapImage.Height / 4;
+                playerSprite[i].Stretch = Stretch.None;
+                playerSprite[i].AlignmentX = AlignmentX.Left;
+                playerSprite[i].AlignmentY = AlignmentY.Top;
 
-            canvas.Children.Add(card1);
-            Canvas.SetTop(card1, 50);
-            Canvas.SetLeft(card1, 100);
-            // MessageBox.Show(bitmapImage.Width.ToString());
-          //  MessageBox.Show(bitmapImage.Height.ToString());
-        }
-    }
-}
+                playerSprite[i].Viewport = new Rect(0, 0, bitmapImage.Width / 13, bitmapImage.Height / 4);
+
+                //set based on card
+                playerTranslateTransform[i] =
+                    new TranslateTransform(-(playerHand[i] % 13) * (bitmapImage.Width / 13),
+                    -(playerHand[i] / 13) * (bitmapImage.Height / 4));
+                playerSprite[i].Transform = playerTranslateTransform[i];
+
+                //make array for player and dealer
+                rectanglePlayer[i] = new Rectangle();
+                rectanglePlayer[i].Fill = playerSprite[i];
+                rectanglePlayer[i].Width = bitmapImage.Width / 13;
+                rectanglePlayer[i].Height = bitmapImage.Height / 4;
+
+                canvas.Children.Add(rectanglePlayer[i]);
+                //set based on position of hand
+                Canvas.SetTop(rectanglePlayer[i], 10);
+                Canvas.SetLeft(rectanglePlayer[i], 10*i + (bitmapImage.Width / 13)*i);
+            }//end for loop
+        }//end displaycards method
+    }//end class
+}//end namespace

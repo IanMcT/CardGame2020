@@ -5,9 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CardGame2020"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Canvas x:Name="canvas" Background="ForestGreen">
-        
-        
+        Title="MainWindow" Height="350" Width="525" FontSize="24" Background="ForestGreen"
+        WindowState="Maximized">
+    <StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Button x:Name="btnHit" Click="btnHit_Click" Width="300">Hit</Button>
+            <Button x:Name="btnStay" Click="btnStay_Click" Width="300">Stay</Button>
+            <Button x:Name="btnDealNewHand" Click="btnDealNewHand_Click" 
+                    Width="300">Deal new hand</Button>
+        </StackPanel>
+        <Canvas x:Name="canvas" Background="ForestGreen">
     </Canvas>
+    </StackPanel>
 </Window>

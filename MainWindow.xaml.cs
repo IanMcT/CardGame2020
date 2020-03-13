@@ -123,7 +123,9 @@ namespace CardGame2020
         }
         public void displayCards()
         {
-           
+            canvas.Children.Clear();//clear the canvas to start fresh
+
+
             BitmapImage bitmapImage = new BitmapImage(new Uri("cards.png",UriKind.Relative));
             
 
@@ -137,26 +139,134 @@ namespace CardGame2020
                 playerSprite[i].Stretch = Stretch.None;
                 playerSprite[i].AlignmentX = AlignmentX.Left;
                 playerSprite[i].AlignmentY = AlignmentY.Top;
+                dealerSprite[i].Stretch = Stretch.None;
+                dealerSprite[i].AlignmentX = AlignmentX.Left;
+                dealerSprite[i].AlignmentY = AlignmentY.Top;
 
                 playerSprite[i].Viewport = new Rect(0, 0, bitmapImage.Width / 13, bitmapImage.Height / 4);
+                dealerSprite[i].Viewport = new Rect(0, 0, bitmapImage.Width / 13, bitmapImage.Height / 4);
 
                 //set based on card
                 playerTranslateTransform[i] =
                     new TranslateTransform(-(playerHand[i] % 13) * (bitmapImage.Width / 13),
                     -(playerHand[i] / 13) * (bitmapImage.Height / 4));
+                dealerTranslateTransform[i] =
+                    new TranslateTransform(-(dealerhand[i] % 13) * (bitmapImage.Width / 13),
+                    -(dealerhand[i] / 13) * (bitmapImage.Height / 4));
                 playerSprite[i].Transform = playerTranslateTransform[i];
+                dealerSprite[i].Transform = dealerTranslateTransform[i];
 
                 //make array for player and dealer
                 rectanglePlayer[i] = new Rectangle();
+                rectangleDealer[i] = new Rectangle();
                 rectanglePlayer[i].Fill = playerSprite[i];
+                rectangleDealer[i].Fill = dealerSprite[i];
                 rectanglePlayer[i].Width = bitmapImage.Width / 13;
+                rectangleDealer[i].Width = bitmapImage.Width / 13;
                 rectanglePlayer[i].Height = bitmapImage.Height / 4;
+                rectangleDealer[i].Height = bitmapImage.Height / 4;
 
                 canvas.Children.Add(rectanglePlayer[i]);
+                canvas.Children.Add(rectangleDealer[i]);
                 //set based on position of hand
                 Canvas.SetTop(rectanglePlayer[i], 10);
+                Canvas.SetTop(rectangleDealer[i], 10 * 2 + bitmapImage.Height / 4);
                 Canvas.SetLeft(rectanglePlayer[i], 10*i + (bitmapImage.Width / 13)*i);
+                Canvas.SetLeft(rectangleDealer[i], 10 * i + (bitmapImage.Width / 13) * i);
             }//end for loop
         }//end displaycards method
+
+        private void btnHit_Click(object sender, RoutedEventArgs e)
+        {
+            /*1 = 2 of clubs
+13 = ace of diamonds
+loop through the array until the value is -1
+	set the element at that index to dealcard
+end loop
+call display cards method*/
+            for (int i = 0; i < playerHand.Length; i++)
+            {
+                if (playerHand[i] < 0)
+                {
+                    playerHand[i] = Deal();
+                    break;
+                }//end if
+            }//end for loop
+            displayCards();
+            checkIfBust();
+        }
+
+        private void checkIfBust()
+        {
+            MessageBox.Show("do your cards add up to over 21?");
+            //throw new NotImplementedException();
+        }
+
+        private void btnStay_Click(object sender, RoutedEventArgs e)
+        {
+            checkIfBust();
+            updateDealer();
+        }
+
+        private void updateDealer()
+        {           
+            int handTotal = 0;
+            for (int i = 0; i< dealerhand.Length; i++)
+            {
+                int CurrentCard = dealerhand[i] % 13 + 1;
+                if (CurrentCard > 10)
+                {
+                    CurrentCard = 10;
+                }
+                if (CurrentCard == 1)
+                {
+                    CurrentCard = 11;
+                }
+                handTotal += CurrentCard;
+            }
+            if (handTotal == 21)
+            {
+                gameOver();
+            }
+            else if (handTotal > 16)
+            {
+                checkWhoWon();
+            }
+            else
+            {
+                hitDealer();
+            }
+            
+        }//end updateDealer
+
+        private void hitDealer()
+        {
+            for (int i = 0; i < dealerhand.Length; i++)
+            {
+                if (dealerhand[i] < 0)
+                {
+                    dealerhand[i] = Deal();
+                    break;
+                }//end if
+            }//end for loop
+            displayCards();
+            updateDealer();
+        }
+
+        private void checkWhoWon()
+        {
+            MessageBox.Show("anyone won?");
+            //throw new NotImplementedException();
+        }
+
+        private void gameOver()
+        {
+            //throw new NotImplementedException();
+        }
+
+        private void btnDealNewHand_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }//end class
 }//end namespace

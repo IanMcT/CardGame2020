@@ -36,7 +36,7 @@ namespace CardGame2020
         public MainWindow()
         {
             InitializeComponent();
-            
+
             //instantiate
             cards = new int[52];
             for (int i = 0; i < cards.Length; i++)
@@ -50,7 +50,7 @@ namespace CardGame2020
             LocationInDeck = 0;
             rectanglePlayer = new Rectangle[4];
             rectangleDealer = new Rectangle[4];
-            playerHand = new int[] {-1,-1,-1,-1 };
+            playerHand = new int[] { -1, -1, -1, -1 };
             dealerhand = new int[] { -1, -1, -1, -1 };
             playerTranslateTransform = new TranslateTransform[4];
             dealerTranslateTransform = new TranslateTransform[4];
@@ -61,14 +61,14 @@ namespace CardGame2020
             {
                 output += cards[i].ToString() + Environment.NewLine;
             }
-            MessageBox.Show(output);
+            //MessageBox.Show(output);
             cards = Shuffle(cards);
             output = "";
             for (int i = 0; i < cards.Length; i++)
             {
                 output += cards[i].ToString() + Environment.NewLine;
             }
-            MessageBox.Show(output);
+           // MessageBox.Show(output);
 
             playGame();
         }//end MainWindow
@@ -118,16 +118,16 @@ namespace CardGame2020
                 }
             }
             displayCards();
-            MessageBox.Show(playerhandOutput + Environment.NewLine
-                + dealerhandOutput);
+        //    MessageBox.Show(playerhandOutput + Environment.NewLine
+       //         + dealerhandOutput);
         }
         public void displayCards()
         {
             canvas.Children.Clear();//clear the canvas to start fresh
 
 
-            BitmapImage bitmapImage = new BitmapImage(new Uri("cards.png",UriKind.Relative));
-            
+            BitmapImage bitmapImage = new BitmapImage(new Uri("cards.png", UriKind.Relative));
+
 
             for (int i = 0; i < playerHand.Length; i++)
             {
@@ -171,7 +171,7 @@ namespace CardGame2020
                 //set based on position of hand
                 Canvas.SetTop(rectanglePlayer[i], 10);
                 Canvas.SetTop(rectangleDealer[i], 10 * 2 + bitmapImage.Height / 4);
-                Canvas.SetLeft(rectanglePlayer[i], 10*i + (bitmapImage.Width / 13)*i);
+                Canvas.SetLeft(rectanglePlayer[i], 10 * i + (bitmapImage.Width / 13) * i);
                 Canvas.SetLeft(rectangleDealer[i], 10 * i + (bitmapImage.Width / 13) * i);
             }//end for loop
         }//end displaycards method
@@ -198,20 +198,23 @@ call display cards method*/
 
         private void checkIfBust()
         {
-            MessageBox.Show("do your cards add up to over 21?");
+         //   MessageBox.Show("do your cards add up to over 21?");
             //throw new NotImplementedException();
         }
 
         private void btnStay_Click(object sender, RoutedEventArgs e)
         {
+            btnHit.IsEnabled = false;
+            btnStay.IsEnabled = false;
             checkIfBust();
             updateDealer();
         }
 
         private void updateDealer()
-        {           
+        {
             int handTotal = 0;
-            for (int i = 0; i< dealerhand.Length; i++)
+            int countAces = 0;
+            for (int i = 0; i < dealerhand.Length; i++)
             {
                 int CurrentCard = dealerhand[i] % 13 + 1;
                 if (CurrentCard > 10)
@@ -221,12 +224,20 @@ call display cards method*/
                 if (CurrentCard == 1)
                 {
                     CurrentCard = 11;
+                    countAces++;
                 }
                 handTotal += CurrentCard;
             }
+            while (countAces > 0 && handTotal > 21) 
+            {
+                handTotal -= 10;
+                countAces--;
+            }
             if (handTotal == 21)
             {
-                gameOver();
+                MessageBox.Show("Dealer got 21 - win for the house!!!");
+                btnHit.IsEnabled = false;
+                btnStay.IsEnabled = false;
             }
             else if (handTotal > 16)
             {
@@ -236,7 +247,7 @@ call display cards method*/
             {
                 hitDealer();
             }
-            
+
         }//end updateDealer
 
         private void hitDealer()
@@ -255,7 +266,84 @@ call display cards method*/
 
         private void checkWhoWon()
         {
-            MessageBox.Show("anyone won?");
+            Console.WriteLine("In Check who won method");
+            int playerScore, dealerScore;
+            playerScore = 0;
+            int playerCountAces = 0;
+            int dealerCountAces = 0;
+            dealerScore = 0;
+            for (int i = 0; i < dealerhand.Length; i++)
+            {
+                int PlayerCurrentCard = playerHand[i] % 13 + 1;
+                int DealerCurrentCard = dealerhand[i] % 13 + 1;
+                if (PlayerCurrentCard > 10)
+                {
+                    PlayerCurrentCard = 10;
+                }
+                if (DealerCurrentCard > 10) 
+                {
+                    DealerCurrentCard = 10;
+                }
+                if (PlayerCurrentCard == 1)
+                {
+                    PlayerCurrentCard = 11;
+                    playerCountAces++;
+                }
+                if (DealerCurrentCard == 1) 
+                {
+                    DealerCurrentCard = 11;
+                    dealerCountAces++;
+                }
+                Console.WriteLine("Player current card: " + PlayerCurrentCard.ToString());
+                Console.WriteLine("Dealer current card: " + DealerCurrentCard.ToString());
+                
+                playerScore += PlayerCurrentCard;
+                dealerScore += DealerCurrentCard;
+            }
+            Console.WriteLine("Player score: " + playerScore.ToString() + " Dealer score: " + dealerScore.ToString());
+
+            while (playerCountAces > 0 && playerScore > 21)
+            {
+                playerScore -= 10;
+                playerCountAces--;
+            }
+            while (dealerCountAces > 0 && dealerScore > 21)
+            {
+                dealerScore -= 10;
+                dealerCountAces--;
+            }
+            this.Title = "Dealer: " + dealerScore.ToString() + " Player: " + playerScore.ToString();
+            string output = "";
+            if (dealerScore == 21)
+            {
+                output = "Dealer scored 21 - they win";
+            }
+            else if (playerScore == 21) 
+            {
+                output = "Player scored 21 - player wins";
+            }
+            else if (playerScore > 21 && dealerScore > 21) 
+            {
+                output = "Player and dealer went bust";
+
+            }
+            else if (dealerScore > 21) {
+                output = "Dealer went bust";
+            }
+            else if (playerScore > 21) 
+            {
+                output = "Player went bust";
+            }
+            else if (dealerScore >= playerScore) 
+            {
+                output = "Dealer wins";
+            }else
+            {
+                output = "Player wins";
+            }
+
+
+            MessageBox.Show(output);
             //throw new NotImplementedException();
         }
 
@@ -266,7 +354,21 @@ call display cards method*/
 
         private void btnDealNewHand_Click(object sender, RoutedEventArgs e)
         {
-
+            if (this.LocationInDeck > 52 - 8) 
+            {
+                for (int i = 0; i < cards.Length; i++)
+                {
+                    cards[i] = i;
+                }
+                LocationInDeck = 0;
+                cards = Shuffle(cards);
+            }
+            playerHand = new int[] { -1, -1, -1, -1 };
+            dealerhand = new int[] { -1, -1, -1, -1 };
+            playGame();
+            btnStay.IsEnabled = true;
+            btnHit.IsEnabled = true;
+            
         }
     }//end class
 }//end namespace
